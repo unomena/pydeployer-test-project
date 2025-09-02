@@ -3,6 +3,16 @@ environment: production
 python_version: "3.12"
 requirements: requirements.txt
 
+database:
+  engine: postgresql  # postgresql, mysql, or sqlite3
+  name: testapp
+  user: deployer
+  password: deployer_pass_2024
+  host: localhost
+  port: 5432
+  create_if_missing: true  # Auto-create database if it doesn't exist
+  test_connection: true    # Test connection before deployment
+
 services:
   - name: web
     type: django
