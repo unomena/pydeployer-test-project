@@ -1,0 +1,28 @@
+name: testapp
+environment: production
+python_version: "3.12"
+requirements: requirements.txt
+
+services:
+  - name: web
+    type: django
+    command: gunicorn --bind 0.0.0.0:${PORT} --workers=2 testapp.wsgi
+    enabled: true
+    health_check:
+      endpoint: /
+      interval: 60
+
+env_vars:
+  DJANGO_SETTINGS_MODULE: testapp.settings
+  PYTHONUNBUFFERED: "1"
+  DEBUG: "0"
+  ALLOWED_HOSTS: "*"
+  SECRET_KEY: "django-test-secret-key-change-in-production"
+  DATABASE_URL: "postgresql://deployer:deployer_pass_2024@localhost/testapp"
+
+hooks:
+  pre_deploy:
+    - python manage.py migrate --noinput
+    - python manage.py collectstatic --noinput || true
+  post_deploy:
+    - python manage.py check
